@@ -10,6 +10,7 @@ Source0:	http://www.ece.uvic.ca/~mdadams/jasper/software/jasper-%{version}.zip
 URL:		http://www.ece.uvic.ca/~mdadams/jasper/
 BuildRequires:	autoconf >= 2.59
 BuildRequires:	automake
+BuildRequires:	crossmingw32-gcc
 BuildRequires:	crossmingw32-libjpeg
 BuildRequires:	libtool
 BuildRequires:	sed >= 4.0
@@ -95,7 +96,7 @@ sed -i -e 's/^libjasper_la_LDFLAGS = /&-no-undefined /' src/libjasper/Makefile.a
 %configure \
 	--target=%{target} \
 	--host=%{target} \
-        --disable-opengl \
+	--disable-opengl \
 	--enable-shared
 
 %{__make}
