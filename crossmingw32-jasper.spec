@@ -1,5 +1,5 @@
-Summary:	JasPer library for images manipulation - Mingw32 cross version
-Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla Mingw32
+Summary:	JasPer library for images manipulation - MinGW32 cross version
+Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla MinGW32
 Name:		crossmingw32-jasper
 Version:	1.900.1
 Release:	2
@@ -55,16 +55,16 @@ implementację tego formatu).
 Ten pakiet zawiera wersję skrośną biblioteki dla Win32.
 
 %package static
-Summary:	Static JasPer library (cross mingw32 version)
-Summary(pl.UTF-8):	Biblioteka statyczna JasPer (wersja skrośna ming32)
+Summary:	Static JasPer library (cross MinGW32 version)
+Summary(pl.UTF-8):	Biblioteka statyczna JasPer (wersja skrośna MinGW32)
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
 
 %description static
-Static JasPer library (cross mingw32 version).
+Static JasPer library (cross MinGW32 version).
 
 %description static -l pl.UTF-8
-Biblioteka statyczna JasPer (wersja skrośna ming32).
+Biblioteka statyczna JasPer (wersja skrośna MinGW32).
 
 %package dll
 Summary:	DLL JasPer library for Windows
