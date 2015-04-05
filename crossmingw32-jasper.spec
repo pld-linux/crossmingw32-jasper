@@ -2,7 +2,7 @@ Summary:	JasPer library for images manipulation - MinGW32 cross version
 Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla MinGW32
 Name:		crossmingw32-jasper
 Version:	1.900.1
-Release:	3
+Release:	4
 License:	BSD-like
 Group:		Development/Libraries
 Source0:	http://www.ece.uvic.ca/~mdadams/jasper/software/jasper-%{version}.zip
@@ -36,6 +36,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %endif
 # -z options are invalid for mingw linker
 %define		filterout_ld	-Wl,-z,.*
+%define		filterout_c	-f[-a-z0-9=]*
+%define		filterout_cxx	-f[-a-z0-9=]*
 
 %description
 JasPer is a collection of software (i.e., a library and application
