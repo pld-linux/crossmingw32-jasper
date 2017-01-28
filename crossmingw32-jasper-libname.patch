@@ -1,0 +1,24 @@
+#--- jasper-2.0.10/src/libjasper/CMakeLists.txt.orig	2016-12-30 17:53:52.000000000 +0100
+#+++ jasper-2.0.10/src/libjasper/CMakeLists.txt	2017-01-25 21:32:51.810752523 +0100
+#@@ -118,7 +118,7 @@
+# 	set(libjasper_type STATIC)
+# endif()
+# 
+#-add_library(libjasper ${libjasper_type}
+#+add_library(jasper ${libjasper_type}
+# 	${libjasper_headers}
+# 	${libjasper_base_sources}
+# 	${libjasper_bmp_sources}
+--- jasper-2.0.10/src/libjasper/CMakeLists.txt.orig	2017-01-25 21:36:26.414083407 +0100
++++ jasper-2.0.10/src/libjasper/CMakeLists.txt	2017-01-25 21:36:35.714083301 +0100
+@@ -142,9 +142,7 @@
+ 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+ )
+ 
+-if (UNIX)
+-	set_target_properties(libjasper PROPERTIES OUTPUT_NAME jasper)
+-endif()
++set_target_properties(libjasper PROPERTIES OUTPUT_NAME jasper)
+ set_target_properties(libjasper PROPERTIES LINKER_LANGUAGE C)
+ 
+ if (UNIX)

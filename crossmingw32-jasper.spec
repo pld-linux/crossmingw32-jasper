@@ -1,21 +1,20 @@
 Summary:	JasPer library for images manipulation - MinGW32 cross version
 Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla MinGW32
 Name:		crossmingw32-jasper
-Version:	1.900.1
-Release:	4
+Version:	2.0.10
+Release:	1
 License:	BSD-like
 Group:		Development/Libraries
-Source0:	http://www.ece.uvic.ca/~mdadams/jasper/software/jasper-%{version}.zip
-# Source0-md5:	a342b2b4495b3e1394e161eb5d85d754
-URL:		http://www.ece.uvic.ca/~mdadams/jasper/
-BuildRequires:	autoconf >= 2.59
-BuildRequires:	automake
+#Source0Download: http://www.ece.uvic.ca/~frodo/jasper/#download
+Source0:	http://www.ece.uvic.ca/~frodo/jasper/software/jasper-%{version}.tar.gz
+# Source0-md5:	06882adcf92524eb493f3cf0d3f62c9a
+Patch0:		%{name}-libname.patch
+URL:		http://www.ece.uvic.ca/~frodo/jasper/
+BuildRequires:	cmake >= 2.8.11
 BuildRequires:	crossmingw32-gcc
 BuildRequires:	crossmingw32-libjpeg
-BuildRequires:	libtool
-BuildRequires:	sed >= 4.0
-BuildRequires:	unzip
 Requires:	crossmingw32-libjpeg
+Obsoletes:	crossmingw32-jasper-static
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		no_install_post_strip	1
@@ -26,6 +25,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_sysprefix		/usr
 %define		_prefix			%{_sysprefix}/%{target}
 %define		_libdir			%{_prefix}/lib
+%define		_pkgconfigdir		%{_prefix}/lib/pkgconfig
 %define		_dlldir			/usr/share/wine/windows/system
 %define		__cc			%{target}-gcc
 %define		__cxx			%{target}-g++
@@ -56,18 +56,6 @@ implementację tego formatu).
 
 Ten pakiet zawiera wersję skrośną biblioteki dla Win32.
 
-%package static
-Summary:	Static JasPer library (cross MinGW32 version)
-Summary(pl.UTF-8):	Biblioteka statyczna JasPer (wersja skrośna MinGW32)
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
-
-%description static
-Static JasPer library (cross MinGW32 version).
-
-%description static -l pl.UTF-8
-Biblioteka statyczna JasPer (wersja skrośna MinGW32).
-
 %package dll
 Summary:	DLL JasPer library for Windows
 Summary(pl.UTF-8):	Biblioteka DLL JasPer dla Windows
@@ -83,54 +71,51 @@ Biblioteka DLL JasPer dla Windows.
 
 %prep
 %setup -q -n jasper-%{version}
-
-# don't build apps (and trmdemo uses sleep() not present in mingw32)
-sed -i -e 's/^SUBDIRS =.*/SUBDIRS = libjasper/' src/Makefile.am
-sed -i -e 's/^AM_DISABLE_SHARED/AC_LIBTOOL_WIN32_DLL/' configure.ac
-sed -i -e 's/^libjasper_la_LDFLAGS = /&-no-undefined /' src/libjasper/Makefile.am
+%patch0 -p1
 
 %build
-%{__libtoolize}
-%{__aclocal}
-%{__autoconf}
-%{__autoheader}
-%{__automake}
-%configure \
-	--target=%{target} \
-	--host=%{target} \
-	--disable-opengl \
-	--enable-shared
+# there is upstream directory named "build", use different name
+install -d builddir
+cd builddir
+# note: build/jasper.pc.in expects CMAKE_INSTALL_INCLUDEDIR and CMAKE_INSTALL_LIBDIR relative to CMAKE_INSTALL_PREFIX
+%cmake .. \
+	-DCMAKE_INSTALL_INCLUDEDIR:PATH=include \
+	-DCMAKE_INSTALL_LIBDIR:PATH=lib \
+	-DCMAKE_SYSTEM_NAME=Windows \
+	-DJAS_ENABLE_AUTOMATIC_DEPENDENCIES=FALSE \
+	-DJAS_ENABLE_OPENGL=FALSE \
+	-DJPEG_INCLUDE_DIR:PATH=%{_includedir}
 
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} install \
+%{__make} -C builddir install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{_dlldir}
-mv -f $RPM_BUILD_ROOT%{_prefix}/bin/*.dll $RPM_BUILD_ROOT%{_dlldir}
+%{__mv} $RPM_BUILD_ROOT%{_libdir}/*.dll $RPM_BUILD_ROOT%{_dlldir}
 
 %if 0%{!?debug:1}
 %{target}-strip --strip-unneeded -R.comment -R.note $RPM_BUILD_ROOT%{_dlldir}/*.dll
 %{target}-strip -g -R.comment -R.note $RPM_BUILD_ROOT%{_libdir}/*.a
 %endif
 
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/*.exe \
+	$RPM_BUILD_ROOT%{_mandir}/man1/*.1
+%{__rm} -rf $RPM_BUILD_ROOT%{_docdir}/{README,*.pdf,html}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc LICENSE NEWS README doc/jasper.pdf doc/jpeg2000.pdf
+%doc ChangeLog LICENSE README doc/jasper.pdf doc/jpeg2000.pdf
 %{_libdir}/libjasper.dll.a
-%{_libdir}/libjasper.la
 %{_includedir}/jasper
-
-%files static
-%defattr(644,root,root,755)
-%{_libdir}/libjasper.a
+%{_pkgconfigdir}/jasper.pc
 
 %files dll
 %defattr(644,root,root,755)
-%{_dlldir}/libjasper-*.dll
+%{_dlldir}/libjasper.dll
