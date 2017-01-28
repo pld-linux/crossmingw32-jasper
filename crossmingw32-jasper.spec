@@ -2,13 +2,15 @@ Summary:	JasPer library for images manipulation - MinGW32 cross version
 Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla MinGW32
 Name:		crossmingw32-jasper
 Version:	2.0.10
-Release:	1
+Release:	2
 License:	BSD-like
 Group:		Development/Libraries
 #Source0Download: http://www.ece.uvic.ca/~frodo/jasper/#download
 Source0:	http://www.ece.uvic.ca/~frodo/jasper/software/jasper-%{version}.tar.gz
 # Source0-md5:	06882adcf92524eb493f3cf0d3f62c9a
 Patch0:		%{name}-libname.patch
+Patch1:		jasper-nocxx.patch
+Patch2:		jasper-nodocs.patch
 URL:		http://www.ece.uvic.ca/~frodo/jasper/
 BuildRequires:	cmake >= 2.8.11
 BuildRequires:	crossmingw32-gcc
@@ -72,6 +74,8 @@ Biblioteka DLL JasPer dla Windows.
 %prep
 %setup -q -n jasper-%{version}
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 # there is upstream directory named "build", use different name
@@ -84,7 +88,8 @@ cd builddir
 	-DCMAKE_SYSTEM_NAME=Windows \
 	-DJAS_ENABLE_AUTOMATIC_DEPENDENCIES=FALSE \
 	-DJAS_ENABLE_OPENGL=FALSE \
-	-DJPEG_INCLUDE_DIR:PATH=%{_includedir}
+	-DJPEG_INCLUDE_DIR:PATH=%{_includedir} \
+	-DJPEG_LIBRARY=%{_libdir}/libjpeg.dll.a
 
 %{__make}
 
