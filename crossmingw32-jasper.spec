@@ -1,16 +1,14 @@
 Summary:	JasPer library for images manipulation - MinGW32 cross version
 Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla MinGW32
 Name:		crossmingw32-jasper
-Version:	2.0.10
-Release:	2
+Version:	2.0.12
+Release:	1
 License:	BSD-like
 Group:		Development/Libraries
 #Source0Download: http://www.ece.uvic.ca/~frodo/jasper/#download
 Source0:	http://www.ece.uvic.ca/~frodo/jasper/software/jasper-%{version}.tar.gz
-# Source0-md5:	06882adcf92524eb493f3cf0d3f62c9a
-Patch0:		%{name}-libname.patch
-Patch1:		jasper-nocxx.patch
-Patch2:		jasper-nodocs.patch
+# Source0-md5:	b839a8bf418a64aa2d06413b23dd5ab3
+Patch0:		jasper-nodocs.patch
 URL:		http://www.ece.uvic.ca/~frodo/jasper/
 BuildRequires:	cmake >= 2.8.11
 BuildRequires:	crossmingw32-gcc
@@ -74,8 +72,6 @@ Biblioteka DLL JasPer dla Windows.
 %prep
 %setup -q -n jasper-%{version}
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 # there is upstream directory named "build", use different name
@@ -100,7 +96,7 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{_dlldir}
-%{__mv} $RPM_BUILD_ROOT%{_libdir}/*.dll $RPM_BUILD_ROOT%{_dlldir}
+%{__mv} $RPM_BUILD_ROOT%{_bindir}/*.dll $RPM_BUILD_ROOT%{_dlldir}
 
 %if 0%{!?debug:1}
 %{target}-strip --strip-unneeded -R.comment -R.note $RPM_BUILD_ROOT%{_dlldir}/*.dll
