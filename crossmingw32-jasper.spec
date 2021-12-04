@@ -1,23 +1,24 @@
 Summary:	JasPer library for images manipulation - MinGW32 cross version
 Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla MinGW32
 Name:		crossmingw32-jasper
-Version:	2.0.23
+Version:	2.0.33
 Release:	1
 License:	BSD-like
 Group:		Development/Libraries
 # versions up to 2.0.14: http://www.ece.uvic.ca/~frodo/jasper/#download
-#Source0Download: https://github.com/mdadams/jasper/releases
-Source0:	https://github.com/mdadams/jasper/archive/version-%{version}/jasper-%{version}.tar.gz
-# Source0-md5:	a58102279f9a09625321cf1cc5a46986
-URL:		http://www.ece.uvic.ca/~frodo/jasper/
+#Source0Download: https://github.com/jasper-software/jasper/releases
+Source0:	https://github.com/jasper-software/jasper/releases/download/version-%{version}/jasper-%{version}.tar.gz
+# Source0-md5:	8761ef749b696e3cace330801e27b486
+URL:		https://www.ece.uvic.ca/~frodo/jasper/
 BuildRequires:	cmake >= 2.8.11
 BuildRequires:	crossmingw32-gcc
 BuildRequires:	crossmingw32-libjpeg
 Requires:	crossmingw32-libjpeg
-Obsoletes:	crossmingw32-jasper-static
+Obsoletes:	crossmingw32-jasper-static < 2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		no_install_post_strip	1
+%define		_enable_debug_packages	0
 
 %define		target			i386-mingw32
 %define		target_platform 	i386-pc-mingw32
@@ -70,7 +71,7 @@ DLL JasPer library for Windows.
 Biblioteka DLL JasPer dla Windows.
 
 %prep
-%setup -q -n jasper-version-%{version}
+%setup -q -n jasper-%{version}
 
 %build
 # there is upstream directory named "build", use different name
