@@ -80,6 +80,7 @@ install -d builddir
 cd builddir
 # note: build/jasper.pc.in expects CMAKE_INSTALL_INCLUDEDIR and CMAKE_INSTALL_LIBDIR relative to CMAKE_INSTALL_PREFIX
 %cmake .. \
+	-DCMAKE_CROSSCOMPILING=ON \
 	-DCMAKE_INSTALL_INCLUDEDIR:PATH=include \
 	-DCMAKE_INSTALL_LIBDIR:PATH=lib \
 	-DCMAKE_SYSTEM_NAME=Windows \
