@@ -1,14 +1,14 @@
 Summary:	JasPer library for images manipulation - MinGW32 cross version
 Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla MinGW32
 Name:		crossmingw32-jasper
-Version:	2.0.33
+Version:	3.0.6
 Release:	1
-License:	BSD-like
+License:	JasPer v2.0 (BSD-like)
 Group:		Development/Libraries
-# versions up to 2.0.14: http://www.ece.uvic.ca/~frodo/jasper/#download
 #Source0Download: https://github.com/jasper-software/jasper/releases
 Source0:	https://github.com/jasper-software/jasper/releases/download/version-%{version}/jasper-%{version}.tar.gz
-# Source0-md5:	8761ef749b696e3cace330801e27b486
+# Source0-md5:	f9388d52a6220303141a42d4c2c81e62
+Patch0:		jasper-mingw32.patch
 URL:		https://www.ece.uvic.ca/~frodo/jasper/
 BuildRequires:	cmake >= 2.8.11
 BuildRequires:	crossmingw32-gcc
@@ -72,6 +72,7 @@ Biblioteka DLL JasPer dla Windows.
 
 %prep
 %setup -q -n jasper-%{version}
+%patch0 -p1
 
 %build
 # there is upstream directory named "build", use different name
@@ -85,6 +86,7 @@ cd builddir
 	-DJAS_ENABLE_AUTOMATIC_DEPENDENCIES=OFF \
 	-DJAS_ENABLE_DOC=OFF \
 	-DJAS_ENABLE_OPENGL=OFF \
+	-DJAS_STDC_VERSION="$(i386-mingw32-cpp -x c -dM < /dev/null | grep __STDC_VERSION__| cut -d' ' -f3)" \
 	-DJPEG_INCLUDE_DIR:PATH=%{_includedir} \
 	-DJPEG_LIBRARY=%{_libdir}/libjpeg.dll.a
 
@@ -113,7 +115,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc LICENSE README doc/jasper.pdf doc/jpeg2000.pdf
+%doc ChangeLog LICENSE.txt NEWS.txt README.md doc/jpeg2000.pdf
 %{_libdir}/libjasper.dll.a
 %{_includedir}/jasper
 %{_pkgconfigdir}/jasper.pc
