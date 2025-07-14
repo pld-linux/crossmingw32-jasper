@@ -72,7 +72,7 @@ Biblioteka DLL JasPer dla Windows.
 
 %prep
 %setup -q -n jasper-%{version}
-%patch0 -p1
+%patch -P0 -p1
 
 %build
 # there is upstream directory named "build", use different name
