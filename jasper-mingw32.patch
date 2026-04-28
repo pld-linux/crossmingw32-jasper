@@ -1,6 +1,6 @@
 Current mingw32 doesn't provide <sysinfoapi.h>, so use older API.
---- jasper-3.0.6/src/libjasper/base/jas_malloc.c.orig	2023-03-13 13:16:49.488682893 +0100
-+++ jasper-3.0.6/src/libjasper/base/jas_malloc.c	2023-03-13 18:13:28.802255734 +0100
+--- jasper-4.2.9/src/libjasper/base/jas_malloc.c.orig	2026-03-05 16:39:38.000000000 +0100
++++ jasper-4.2.9/src/libjasper/base/jas_malloc.c	2026-04-28 17:43:45.439110242 +0200
 @@ -94,7 +94,6 @@
  #	include <unistd.h>
  #elif defined(_WIN32)
@@ -9,7 +9,7 @@ Current mingw32 doesn't provide <sysinfoapi.h>, so use older API.
  #endif
  
  /******************************************************************************\
-@@ -649,15 +648,14 @@ size_t jas_get_total_mem_size()
+@@ -657,16 +656,13 @@ size_t jas_get_total_mem_size()
  	long page_size = sysconf(_SC_PAGE_SIZE);
  	return pages * page_size;
  #elif defined(_WIN32)
@@ -17,16 +17,16 @@ Current mingw32 doesn't provide <sysinfoapi.h>, so use older API.
 -	Reference:
 -	https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getphysicallyinstalledsystemmemory
 -	*/
--	ULONGLONG size;
--	if (!GetPhysicallyInstalledSystemMemory(&size)) {
+-	ULONGLONG mem_size_in_kb;
+-	if (!GetPhysicallyInstalledSystemMemory(&mem_size_in_kb)) {
 +	MEMORYSTATUSEX memStatusEx = {0};
 +	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 +	BOOL bRet = GlobalMemoryStatusEx(&memStatusEx);
-+	return memStatusEx.ullTotalPhys;
-+	if (!GlobalMemoryStatusEx(&memStatusEx)) {
++	if (!bRet) {
  		return 0;
  	}
--	return 1024 * size;
+-	return (mem_size_in_kb < SIZE_MAX / JAS_CAST(size_t, 1024)) ?
+-	  JAS_CAST(size_t, 1024) * mem_size_in_kb : SIZE_MAX;
 +	return memStatusEx.ullTotalPhys;
  #else
  	return 0;

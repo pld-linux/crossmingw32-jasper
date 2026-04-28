@@ -1,18 +1,19 @@
 Summary:	JasPer library for images manipulation - MinGW32 cross version
 Summary(pl.UTF-8):	Biblioteka JasPer do obróbki obrazów - wersja skrośna dla MinGW32
 Name:		crossmingw32-jasper
-Version:	3.0.6
+Version:	4.2.9
 Release:	1
 License:	JasPer v2.0 (BSD-like)
 Group:		Development/Libraries
 #Source0Download: https://github.com/jasper-software/jasper/releases
 Source0:	https://github.com/jasper-software/jasper/releases/download/version-%{version}/jasper-%{version}.tar.gz
-# Source0-md5:	f9388d52a6220303141a42d4c2c81e62
+# Source0-md5:	5ebfacbbb70c6286fcd0ee08eceeea8c
 Patch0:		jasper-mingw32.patch
 URL:		https://www.ece.uvic.ca/~frodo/jasper/
-BuildRequires:	cmake >= 2.8.11
-BuildRequires:	crossmingw32-gcc
+BuildRequires:	cmake >= 3.12
+BuildRequires:	crossmingw32-gcc >= 4.7
 BuildRequires:	crossmingw32-libjpeg
+BuildRequires:	rpmbuild(macros) >= 1.605
 Requires:	crossmingw32-libjpeg
 Obsoletes:	crossmingw32-jasper-static < 2
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -27,6 +28,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_prefix			%{_sysprefix}/%{target}
 %define		_libdir			%{_prefix}/lib
 %define		_pkgconfigdir		%{_prefix}/lib/pkgconfig
+%define		_docdir			%{_sysprefix}/share/doc
 %define		_dlldir			/usr/share/wine/windows/system
 %define		__cc			%{target}-gcc
 %define		__cxx			%{target}-g++
@@ -76,8 +78,9 @@ Biblioteka DLL JasPer dla Windows.
 
 %build
 # there is upstream directory named "build", use different name
-install -d builddir
-cd builddir
+# InSourceBuild.cmake requires build dir to be outside source dir or have "tmp" prefix
+install -d tmp_builddir
+cd tmp_builddir
 # note: build/jasper.pc.in expects CMAKE_INSTALL_INCLUDEDIR and CMAKE_INSTALL_LIBDIR relative to CMAKE_INSTALL_PREFIX
 %cmake .. \
 	-DCMAKE_CROSSCOMPILING=ON \
@@ -86,7 +89,9 @@ cd builddir
 	-DCMAKE_SYSTEM_NAME=Windows \
 	-DJAS_ENABLE_AUTOMATIC_DEPENDENCIES=OFF \
 	-DJAS_ENABLE_DOC=OFF \
+	-DJAS_ENABLE_LIBHEIF=OFF \
 	-DJAS_ENABLE_OPENGL=OFF \
+	-DJAS_INCLUDE_HEIC_CODEC=OFF \
 	-DJAS_STDC_VERSION="$(i386-mingw32-cpp -x c -dM < /dev/null | grep __STDC_VERSION__| cut -d' ' -f3)" \
 	-DJPEG_INCLUDE_DIR:PATH=%{_includedir} \
 	-DJPEG_LIBRARY=%{_libdir}/libjpeg.dll.a
@@ -96,7 +101,7 @@ cd builddir
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} -C builddir install \
+%{__make} -C tmp_builddir install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{_dlldir}
@@ -109,7 +114,7 @@ install -d $RPM_BUILD_ROOT%{_dlldir}
 
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/*.exe \
 	$RPM_BUILD_ROOT%{_mandir}/man1/*.1
-%{__rm} -rf $RPM_BUILD_ROOT%{_docdir}/{README,*.pdf,html}
+%{__rm} -rf $RPM_BUILD_ROOT%{_docdir}/{README.md,*.pdf,html}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
